@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,12 +20,15 @@ public class PersonEntity {
     private Long id;
 
     @Column(unique = true, nullable = false)
+    @Size(min = 4, max = 64)
     private String username;
 
     @Column(nullable = false)
+    @Size(min = 4, max = 64)
     private String password;
 
     @Column(unique = true, nullable = false)
+    @Size(min = 4, max = 64)
     private String email;
 
     public PersonEntity(String username, String password, String email) {

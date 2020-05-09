@@ -15,15 +15,12 @@ public class Person {
     private Long id;
 
     @NotBlank
-    @Size(min = 4, max = 64)
     private String username;
 
     @NotBlank
-    @Size(min = 4, max = 64)
     private String password;
 
     @NotBlank
-    @Size(min = 4, max = 64)
     private String email;
 
     public Person(String username, String password, String email) {

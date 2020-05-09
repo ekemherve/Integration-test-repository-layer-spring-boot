@@ -14,6 +14,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+//************************************************************************************************************
+//        WE MUST NOT!!!!!!!!!!!! USE THE ID TO MAKE ASSERTIONS BUT A REAL UNIQUE KEY LIKE EMAIL
+//        HERE IT IS JUST FOR THE PURPOSE OF A TUTORIAL
+//************************************************************************************************************
+
+
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @DataJpaTest
 @Slf4j
@@ -29,24 +35,24 @@ public class PersonRepositoryTest {
 
     private static final String SHOULD_BE_EMPTY = " should be empty";
     private static final String SHOULD_BE_EQUAL_TO = " should be equal to ";
+    private static final String SHOULD_NOT_BE_NULL = " should not be null";
+    private static final String SHOULD_BE_NULL = " should be null";
+
+    //************************************************************************************************************
+    //    THE JPA BUILT-IN METHOD (CRUD METHODS + OTHERS) MUST NEVER BE TESTED, HERE ITS JUST FOR TUTORIAL PURPOSE
+    //************************************************************************************************************
 
     @Test
     public void givenValidEntitySaveShouldBeOk() {
 
         log.info("*************************Inside saveValidEntity test method****************************");
-        PersonEntity person = personRepository.save(new PersonEntity("iori", "iori", "iori@gmail.com"));
+        PersonEntity person = personRepository.save(new PersonEntity(USERNAME, USER_PASSWORD, USER_EMAIL));
         assertAll(
                 () -> assertNotNull(person, "person object must not be null"),
-                () -> assertTrue(person.getId().equals(ID), person.getId() + SHOULD_BE_EQUAL_TO + ID),
-                () -> assertTrue(
-                        person.getUsername().equals(USERNAME),
-                        person.getUsername() + SHOULD_BE_EQUAL_TO + USERNAME),
-                () -> assertTrue(
-                        person.getPassword().equals(USER_PASSWORD),
-                        person.getPassword() + SHOULD_BE_EQUAL_TO + USER_PASSWORD),
-                () -> assertTrue(
-                        person.getEmail().equals(USER_EMAIL),
-                        person.getEmail() + SHOULD_BE_EQUAL_TO + USER_EMAIL)
+                () -> assertEquals(person.getId(), ID, person.getId() + SHOULD_BE_EQUAL_TO + ID),
+                () -> assertEquals(person.getUsername(), USERNAME, person.getUsername() + SHOULD_BE_EQUAL_TO + USERNAME),
+                () -> assertEquals(person.getPassword(), USER_PASSWORD, person.getPassword() + SHOULD_BE_EQUAL_TO + USER_PASSWORD),
+                () -> assertEquals(person.getEmail(), USER_EMAIL, person.getEmail() + SHOULD_BE_EQUAL_TO + USER_EMAIL)
         );
     }
 
@@ -62,8 +68,8 @@ public class PersonRepositoryTest {
     public void givenNonEmptyDatabaseFindAllShouldReturnAllPersistedEntities() {
 
         log.info("*************************Inside givenNonEmptyDatabaseFindAllShouldReturnAllPersistedEntities test method****************************");
-        personRepository.save(new PersonEntity("iori", "iori", "iori@gmail.com"));
-        personRepository.save(new PersonEntity("kyo", "kyo", "kyo@gmail.com"));
+        personRepository.save(new PersonEntity(USERNAME, USER_PASSWORD, USER_EMAIL));
+        personRepository.save(new PersonEntity("herve", "herve", "herve@gmail.com"));
         List<PersonEntity> persons = personRepository.findAll();
         assertEquals(2, persons.size());
     }
@@ -72,14 +78,70 @@ public class PersonRepositoryTest {
     public void givenExistingEntityDeleteShouldBeRemoveFromDatabase() {
 
         log.info("*************************Inside givenExistingEntityDeleteShouldBeRemoveFromDatabase test method****************************");
-        personRepository.save(new PersonEntity("iori", "iori", "iori@gmail.com"));
-        personRepository.save(new PersonEntity("kyo", "kyo", "kyo@gmail.com"));
+        personRepository.save(new PersonEntity(USERNAME, USER_PASSWORD, USER_EMAIL));
+        personRepository.save(new PersonEntity("herve", "herve", "herve@gmail.com"));
         List<PersonEntity> persons = personRepository.findAll();
         assertEquals(2, persons.size());
         personRepository.delete(personRepository.getOne(ID));
         assertEquals(1, personRepository.findAll().size());
         personRepository.delete(personRepository.getOne(2*ID));
         assertEquals(0, personRepository.findAll().size());
+    }
+
+    //************************************************************************************************************
+    //    WE CAN PUT THE BELOW TESTS IN ANOTHER CLASS AND RUN THEM GIVEN A PROFILE (IE : REPOSITORY-TEST)
+    //************************************************************************************************************
+
+    @Test
+    public void givenExistingEntityWhenFindByUsernameThenShouldReturnNotNull(){
+        log.info("*************************Inside givenExistingEntityDeleteShouldBeRemoveFromDatabase test method****************************");
+        personRepository.save(new PersonEntity(USERNAME, USER_PASSWORD, USER_EMAIL));
+        PersonEntity person = personRepository.findByUsername(USERNAME);
+        assertAll(
+                () -> assertNotNull(person, "person " + SHOULD_NOT_BE_NULL),
+                () -> assertEquals(person.getUsername(), USERNAME),
+                () -> assertEquals(person.getEmail(), USER_EMAIL),
+                () -> assertEquals(person.getPassword(), USER_PASSWORD)
+        );
+    }
+
+    @Test
+    public void givenNonExistingEntityWhenFindByUsernameThenShouldReturnNull(){
+        log.info("*************************Inside givenNonExistingEntityFindByUsernameShouldReturnNull test method****************************");
+        PersonEntity person = personRepository.findByUsername(USERNAME);
+        assertNull(person, "person " + SHOULD_BE_NULL);
+    }
+
+    @Test
+    public void givenExistingEntityWhenFindByEmailThenShouldReturnNotNull(){
+        log.info("*************************Inside givenExistingEntityWhenFindByEmailThenShouldReturnNotNull test method****************************");
+        personRepository.save(new PersonEntity(USERNAME, USER_PASSWORD, USER_EMAIL));
+        PersonEntity person = personRepository.findByEmail(USER_EMAIL);
+        assertAll(
+                () -> assertNotNull(person, "person " + SHOULD_NOT_BE_NULL),
+                () -> assertEquals(person.getUsername(), USERNAME),
+                () -> assertEquals(person.getEmail(), USER_EMAIL),
+                () -> assertEquals(person.getPassword(), USER_PASSWORD)
+        );
+    }
+
+    @Test
+    public void givenNonExistingEntityWhenFindByEmailThenShouldReturnNull(){
+        log.info("*************************Inside givenNonExistingEntityWhenFindByEmailThenShouldReturnNull test method****************************");
+        PersonEntity person = personRepository.findByEmail(USER_EMAIL);
+        assertNull(person, "person " + SHOULD_BE_NULL);
+    }
+
+    @Test
+    public void givenTwoExistingEntitiesWithEachParameterMatchingAnEntityWhenFindByUsernameOrEmailThenShouldReturnTwoEntities(){
+        log.info("*************************Inside givenTwoExistingEntitiesWithEachParameterMatchingAnEntityWhenFindByUsernameOrEmailThenShouldReturnTwoEntities test method****************************");
+        personRepository.save(new PersonEntity(USERNAME, USER_PASSWORD, USER_EMAIL));
+        personRepository.save(new PersonEntity("herve", "herve", "herve@gmail.com"));
+
+        List<PersonEntity> persons = personRepository.findByUsernameOrEmail(USERNAME, "herve@gmail.com");
+        assertAll(
+                () -> assertEquals(2, persons.size())
+        );
     }
 }
 
