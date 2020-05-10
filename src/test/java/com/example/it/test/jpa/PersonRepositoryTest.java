@@ -4,6 +4,7 @@ import com.example.it.test.jpa.dataaccess.entity.PersonEntity;
 import com.example.it.test.jpa.dataaccess.repository.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -20,9 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 //************************************************************************************************************
 
 
+@Slf4j
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @DataJpaTest
-@Slf4j
+@DisplayName("Person Repository integration test")
 public class PersonRepositoryTest {
 
     @Autowired
@@ -42,6 +44,7 @@ public class PersonRepositoryTest {
     //    THE JPA BUILT-IN METHOD (CRUD METHODS + OTHERS) MUST NEVER BE TESTED, HERE ITS JUST FOR TUTORIAL PURPOSE
     //************************************************************************************************************
 
+    @DisplayName(value = "save a valid Entity")
     @Test
     public void givenValidEntitySaveShouldBeOk() {
 
@@ -56,6 +59,7 @@ public class PersonRepositoryTest {
         );
     }
 
+    @DisplayName(value = "findAll should return an empty list when database is empty")
     @Test
     public void givenEmptyDatabaseFindAllShouldReturnAnEmptyList() {
 
@@ -64,6 +68,7 @@ public class PersonRepositoryTest {
         assertEquals(0, persons.size(), "Table " + SHOULD_BE_EMPTY);
     }
 
+    @DisplayName(value = "findAll should return all entities when database is populated")
     @Test
     public void givenNonEmptyDatabaseFindAllShouldReturnAllPersistedEntities() {
 
@@ -74,6 +79,7 @@ public class PersonRepositoryTest {
         assertEquals(2, persons.size());
     }
 
+    @DisplayName(value = "delete should remove a entity if it exits")
     @Test
     public void givenExistingEntityDeleteShouldBeRemoveFromDatabase() {
 
@@ -92,6 +98,7 @@ public class PersonRepositoryTest {
     //    WE CAN PUT THE BELOW TESTS IN ANOTHER CLASS AND RUN THEM GIVEN A PROFILE (IE : REPOSITORY-TEST)
     //************************************************************************************************************
 
+    @DisplayName(value = "findByUsername should return an entity if it exists")
     @Test
     public void givenExistingEntityWhenFindByUsernameThenShouldReturnNotNull(){
         log.info("*************************Inside givenExistingEntityDeleteShouldBeRemoveFromDatabase test method****************************");
@@ -105,6 +112,7 @@ public class PersonRepositoryTest {
         );
     }
 
+    @DisplayName(value = "findByUsername should return null for non existing entity")
     @Test
     public void givenNonExistingEntityWhenFindByUsernameThenShouldReturnNull(){
         log.info("*************************Inside givenNonExistingEntityFindByUsernameShouldReturnNull test method****************************");
@@ -112,6 +120,7 @@ public class PersonRepositoryTest {
         assertNull(person, "person " + SHOULD_BE_NULL);
     }
 
+    @DisplayName(value = "findByEmail should return an entity if it exists")
     @Test
     public void givenExistingEntityWhenFindByEmailThenShouldReturnNotNull(){
         log.info("*************************Inside givenExistingEntityWhenFindByEmailThenShouldReturnNotNull test method****************************");
@@ -125,6 +134,7 @@ public class PersonRepositoryTest {
         );
     }
 
+    @DisplayName(value = "findByEmail should null for non existing entity")
     @Test
     public void givenNonExistingEntityWhenFindByEmailThenShouldReturnNull(){
         log.info("*************************Inside givenNonExistingEntityWhenFindByEmailThenShouldReturnNull test method****************************");
@@ -132,6 +142,7 @@ public class PersonRepositoryTest {
         assertNull(person, "person " + SHOULD_BE_NULL);
     }
 
+    @DisplayName(value = "findByUsernameOrEmail should return two entities if username match one entity and email match another entity")
     @Test
     public void givenTwoExistingEntitiesWithEachParameterMatchingAnEntityWhenFindByUsernameOrEmailThenShouldReturnTwoEntities(){
         log.info("*************************Inside givenTwoExistingEntitiesWithEachParameterMatchingAnEntityWhenFindByUsernameOrEmailThenShouldReturnTwoEntities test method****************************");
